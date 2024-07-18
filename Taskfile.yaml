@@ -1,0 +1,13 @@
+version: '3'
+
+tasks:
+  default:
+    deps:
+      - build
+
+  build:
+    silent: true
+    cmds:
+      - echo "building project"
+      - go build -o build/bin/main ./internal/cmd/main
+      - echo "project compiled successfully"
