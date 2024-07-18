@@ -11,3 +11,13 @@ tasks:
       - echo "building project"
       - go build -o build/bin/main ./internal/cmd/main
       - echo "project compiled successfully"
+
+  start:
+    deps:
+      - build
+    cmd: ./build/bin/main
+
+  start:dev:
+    description: Start the application in watch mode
+    silent: true
+    cmd: air
