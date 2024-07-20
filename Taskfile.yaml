@@ -9,7 +9,7 @@ tasks:
     silent: true
     cmds:
       - echo "building project"
-      - go build -o build/bin/main ./internal/cmd/main
+      - go build -o build/bin/main ./internal/api/cmd
       - echo "project compiled successfully"
 
   start:

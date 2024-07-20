@@ -1,0 +1,7 @@
+services:
+  api:
+    build: .
+    image: 4strodev/du-backend
+    restart: on-failure
+    ports:
+      - "3000:3000"

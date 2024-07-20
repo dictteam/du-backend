@@ -1,4 +1,4 @@
-module github.com/4strodev/go_project
+module github.com/4strodev/du_backend
 
 go 1.22.4
 
@@ -6,6 +6,7 @@ require github.com/gofiber/fiber/v2 v2.52.5
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/golobby/container/v3 v3.3.2 // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
