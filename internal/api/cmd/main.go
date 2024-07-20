@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/4strodev/du_backend/internal/api"
+	"github.com/4strodev/du_backend/internal/api/features/healthcheck"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -19,21 +20,13 @@ func main() {
 		app.Use(recover.New())
 		app.Use(logger.New())
 
-		app.Get("/", func(ctx *fiber.Ctx) error {
-			return ctx.JSON(fiber.Map{
-				"msg": "Hello, world!",
-			})
-		})
-
-		app.Get("/ping", func(ctx *fiber.Ctx) error {
-			return ctx.SendString("pong!")
-		})
-
 		return app
 	})
 
 	// Here dependencies will be attached to the container
 	app := api.NewApp(diContainer)
+
+	app.AddController("", healthcheck.NewController())
 
 	log.Fatal(app.Start())
 }
