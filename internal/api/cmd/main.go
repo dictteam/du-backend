@@ -5,6 +5,7 @@ import (
 
 	"github.com/4strodev/du_backend/internal/api"
 	"github.com/4strodev/du_backend/internal/api/features/healthcheck"
+	"github.com/4strodev/du_backend/internal/api/features/users"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -27,6 +28,7 @@ func main() {
 	app := api.NewApp(diContainer)
 
 	app.AddController("", healthcheck.NewController())
+	app.AddController("users", users.NewUsersController())
 
 	log.Fatal(app.Start())
 }
