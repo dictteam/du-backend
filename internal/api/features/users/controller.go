@@ -9,8 +9,14 @@ type UserController struct {
 }
 
 // Init implements api.Controller.
-func (c *UserController) Init(router fiber.Router, cont container.Container) error {
-	router.Get("/", c.GetUsers)
+func (c *UserController) Init(cont container.Container) error {
+	var router fiber.Router
+	err := cont.Resolve(&router)
+	if err != nil {
+		return err
+	}
+	group := router.Group("users")
+	group.Get("/", c.GetUsers)
 	return nil
 }
 

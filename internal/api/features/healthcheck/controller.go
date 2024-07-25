@@ -11,8 +11,14 @@ type HealthCheckController struct {
 }
 
 // Init implements api.Controller.
-func (*HealthCheckController) Init(router fiber.Router, cont container.Container) error {
-	router.Get("/healthcheck", func(ctx *fiber.Ctx) error {
+func (*HealthCheckController) Init(cont container.Container) error {
+	var router fiber.Router
+	err := cont.Resolve(&router)
+	if err != nil {
+		return nil
+	}
+	group := router.Group("/healthcheck")
+	group.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusOK).SendString("ok")
 	})
 
