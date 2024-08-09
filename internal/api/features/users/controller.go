@@ -1,6 +1,9 @@
 package users
 
 import (
+	"context"
+
+	"github.com/danielgtaylor/huma/v2"
 	fiber "github.com/gofiber/fiber/v2"
 	container "github.com/golobby/container/v3"
 )
@@ -8,21 +11,32 @@ import (
 type UserController struct {
 }
 
+type UserResponse struct {
+	Body struct {
+		Message string `json:"message" doc:"message received from api" example:"Hello from users" requied:"false"`
+	}
+}
+
 // Init implements api.Controller.
 func (c *UserController) Init(cont container.Container) error {
-	var router fiber.Router
-	err := cont.Resolve(&router)
+	var api huma.API
+	err := cont.Resolve(&api)
 	if err != nil {
 		return err
 	}
-	group := router.Group("users")
-	group.Get("/", c.GetUsers)
+
+	huma.Get(api, "/users", func(ctx context.Context, body *struct{}) (*UserResponse, error) {
+		response := &UserResponse{}
+		response.Body.Message = "Hello from users"
+		return response, nil
+	})
+
 	return nil
 }
 
 func (c *UserController) GetUsers(ctx *fiber.Ctx) error {
 	return ctx.JSON(fiber.Map{
-		"msg": "Method not implemented",
+		"msg": "Method yet not implemented",
 	})
 }
 

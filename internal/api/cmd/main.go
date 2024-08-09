@@ -15,16 +15,23 @@ func main() {
 	// Here dependencies will be attached to the container
 	app := api.NewApp(diContainer)
 
-	app.AddProtocolAdapter(&api.FiberProtocolResolver{})
+	app.AddProtocolAdapter(&api.HumaProtocolResolver{})
 
-	err := app.AddController(healthcheck.NewController())
+	err := addControllers(app, healthcheck.NewController(), users.NewUsersController())
 	if err != nil {
-		panic(err)
-	}
-	err = app.AddController(users.NewUsersController())
-	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	log.Fatal(app.Start())
+}
+
+func addControllers(app *api.App, controllers ...api.Controller) error {
+	for _, controller := range controllers {
+		err := app.AddController(controller)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

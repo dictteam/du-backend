@@ -1,27 +1,34 @@
 package healthcheck
 
 import (
-	"net/http"
+	"context"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/danielgtaylor/huma/v2"
 	container "github.com/golobby/container/v3"
 )
 
 type HealthCheckController struct {
 }
 
+type HealtcheckOutput struct {
+	ContentType string `header:"Content-Type"`
+	Body []byte
+}
+
 // Init implements api.Controller.
 func (*HealthCheckController) Init(cont container.Container) error {
-	var router fiber.Router
-	err := cont.Resolve(&router)
+	var api huma.API
+	err := cont.Resolve(&api)
 	if err != nil {
-		return nil
+		return err
 	}
-	group := router.Group("/healthcheck")
-	group.Get("/", func(ctx *fiber.Ctx) error {
-		return ctx.Status(http.StatusOK).SendString("ok")
-	})
 
+	huma.Get(api, "/healthcheck", func(ctx context.Context, input *struct {}) (*HealtcheckOutput, error) {
+		resp := &HealtcheckOutput{}
+		resp.ContentType = "text/plain"
+		resp.Body = []byte("ok")
+		return resp, nil
+	})
 	return nil
 }
 

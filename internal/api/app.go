@@ -3,7 +3,6 @@ package api
 import (
 	"errors"
 	"fmt"
-
 	"github.com/golobby/container/v3"
 )
 
@@ -18,7 +17,10 @@ func (app *App) Start() error {
 
 	for _, adapter := range app.protocolAdapters {
 		go func(errChan chan error, adapter ProtocolAdapter) {
-			errChan <- adapter.Start()
+			err := adapter.Start()
+			if err != nil {
+				errChan <- err
+			}
 		}(errChan, adapter)
 	}
 
@@ -26,7 +28,7 @@ func (app *App) Start() error {
 }
 
 func (app *App) AddProtocolAdapter(adapter ProtocolAdapter) error {
-	err := adapter.PrepareDependency(app.serviceContainer)
+	err := adapter.PrepareDependencies(app.serviceContainer)
 	if err != nil {
 		return fmt.Errorf("error perparing adapter: %w", err)
 	}
