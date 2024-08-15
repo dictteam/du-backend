@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"log/slog"
+	"os"
 
 	"github.com/4strodev/du_backend/internal/api"
 	"github.com/4strodev/du_backend/internal/api/features/healthcheck"
@@ -12,10 +14,14 @@ import (
 func main() {
 	diContainer := container.New()
 
+	diContainer.Singleton(func() *slog.Logger {
+		return slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	})
+
 	// Here dependencies will be attached to the container
 	app := api.NewApp(diContainer)
 
-	app.AddProtocolAdapter(&api.HumaProtocolResolver{})
+	app.AddProtocolAdapter(&api.HumaProtocolAdapter{})
 
 	err := addControllers(app, healthcheck.NewController(), users.NewUsersController())
 	if err != nil {

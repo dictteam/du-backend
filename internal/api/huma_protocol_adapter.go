@@ -1,7 +1,7 @@
 package api
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/danielgtaylor/huma/v2"
@@ -9,16 +9,18 @@ import (
 	"github.com/golobby/container/v3"
 )
 
-type HumaProtocolResolver struct {
+type HumaProtocolAdapter struct {
 	api    huma.API
 	router *http.ServeMux
+	logger *slog.Logger
 }
 
-func (h *HumaProtocolResolver) PrepareDependencies(cont container.Container) error {
+func (h *HumaProtocolAdapter) PrepareDependencies(cont container.Container) error {
 	router := http.NewServeMux()
 	h.router = router
 	api := humago.New(router, huma.DefaultConfig("My API", "1.0.0"))
 	h.api = api
+	container.MustResolve(cont, &h.logger)
 
 	cont.Singleton(func() huma.API {
 		return api
@@ -27,7 +29,7 @@ func (h *HumaProtocolResolver) PrepareDependencies(cont container.Container) err
 	return nil
 }
 
-func (h *HumaProtocolResolver) Start() error {
-	log.Println("starting http server on port 8080")
+func (h *HumaProtocolAdapter) Start() error {
+	h.logger.Info("application started on port 8080")
 	return http.ListenAndServe("0.0.0.0:8080", h.router)
 }
