@@ -5,9 +5,11 @@ type ValueObject[T any] struct {
 }
 
 func NewValueObject[T any](value T) ValueObject[T] {
-	return ValueObject[T]{
+	v := ValueObject[T]{
 		value: value,
 	}
+
+	return v
 }
 
 func (v *ValueObject[T]) Value() T {
