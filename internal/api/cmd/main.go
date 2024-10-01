@@ -2,33 +2,42 @@ package main
 
 import (
 	"log"
+	"log/slog"
+	"os"
 
 	"github.com/4strodev/du_backend/internal/api"
 	"github.com/4strodev/du_backend/internal/api/features/healthcheck"
 	"github.com/4strodev/du_backend/internal/api/features/users"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/golobby/container/v3"
 )
 
 func main() {
 	diContainer := container.New()
 
-	diContainer.Singleton(func() *fiber.App {
-		app := fiber.New()
-
-		app.Use(recover.New())
-		app.Use(logger.New())
-
-		return app
+	diContainer.Singleton(func() *slog.Logger {
+		return slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	})
 
 	// Here dependencies will be attached to the container
 	app := api.NewApp(diContainer)
 
-	app.AddController("", healthcheck.NewController())
-	app.AddController("users", users.NewUsersController())
+	app.AddProtocolAdapter(&api.HumaProtocolAdapter{})
+
+	err := addControllers(app, healthcheck.NewController(), users.NewUsersController())
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	log.Fatal(app.Start())
+}
+
+func addControllers(app *api.App, controllers ...api.Controller) error {
+	for _, controller := range controllers {
+		err := app.AddController(controller)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
